@@ -34,10 +34,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Installed by hand rather than from requirements.txt: that file is
-          # the application's runtime set, and gunicorn is deliberately absent
-          # from it (unused; see the README's deployment section).
-          pip install beautifulsoup4 requests pyyaml pycryptodome 'django>=5.0'
+          # From requirements.txt, deliberately. A hand-written package list
+          # drifted from what actually runs: the passphrase tests import
+          # `ponishabot.auth`, which does `from selenium import webdriver` at
+          # module level, so every job failed on a missing selenium that the
+          # application itself installs. Testing against the real dependency set
+          # is the point; a curated subset only ever proves the subset works.
+          pip install -r requirements.txt
 
       - name: Django system check
         run: python manage.py check
