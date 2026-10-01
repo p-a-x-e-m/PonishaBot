@@ -1,0 +1,18 @@
+# Pinned: a floating range silently changes what runs between machines, and
+# the Django pin below already bit us once (it excludes the 6.x this is
+# developed against — see the README's setup notes).
+
+selenium==4.32.0
+webdriver-manager==4.0.2
+beautifulsoup4==4.12.3
+# >=2.33.0 for PYSEC-2026-2275 (predictable temp filename in
+# extract_zipped_paths) and >=2.32.4 for PYSEC-2026-1872 (.netrc leak on
+# crafted URLs). Neither path is used here, but a public repo should not
+# ship a known-vulnerable pin.
+requests>=2.33.0
+pyyaml>=6.0.3
+pycryptodome>=3.20
+django>=5.0
+# gunicorn is NOT used by this project (the service runs `manage.py bot`) and
+# the dashboard must never run behind multiple workers — see the README's
+# deployment section. Kept out of the install so it cannot be reached for.

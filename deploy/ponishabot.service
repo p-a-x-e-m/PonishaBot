@@ -1,0 +1,30 @@
+[Unit]
+Description=ponishabot — ponisha.ir automation dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ponisha
+Group=ponisha
+WorkingDirectory=/opt/ponishabot
+
+# Secrets / deployment values — keep this file 0600 and owned by root
+EnvironmentFile=/opt/ponishabot/deploy/bot.env
+
+# ONE process only: the bot owns a singleton (monitor thread + Selenium driver).
+# Never run this behind multiple workers — two processes would double-bid.
+ExecStart=/opt/ponishabot/venv/bin/python manage.py bot --host 127.0.0.1 --port 8000
+
+Restart=always
+RestartSec=10
+
+# A bid cycle can take a while (Selenium + AI) — let it finish on stop/restart
+TimeoutStopSec=180
+KillMode=mixed
+
+StandardOutput=append:/var/log/ponishabot/service.log
+StandardError=append:/var/log/ponishabot/service.log
+
+[Install]
+WantedBy=multi-user.target

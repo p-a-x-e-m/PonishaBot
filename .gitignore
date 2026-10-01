@@ -1,0 +1,82 @@
+# Runtime artifacts — NEVER commit ponisha.db (contains live session cookies)
+# Wildcards, not exact names: a `ponisha.db.bak` or `debug2.log` must not slip
+# through, since one leaked cookie file is a full account takeover.
+*.db
+*.db-*
+*.db.*
+*.sqlite3
+*.log
+debug*/
+bid_error_*.png
+dashboard.html
+bid_log.json
+data/
+
+# Secrets — copy config.example.yaml and .env.example, fill locally.
+# `.env` alone would miss deploy/bot.env.prod or web/.env.
+config.yaml
+.env*
+!.env.example
+deploy/*.env*
+!deploy/*.env.example
+
+# The pss-at passphrase can live here instead of an env var (auth.py reads
+# `token_passphrase`). Never commit it.
+ponishabot.local.yaml
+
+# Key material and credentials, wherever they land.
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+id_rsa*
+id_ed25519*
+*.ppk
+
+# Database dumps and backups — a `ponisha.db` copy by another name.
+*.sql
+*.sql.gz
+*.dump
+*.bak
+*.backup
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tgz
+!assets/**
+
+# Auth storage (Selenium profiles hold live session cookies)
+chrome-profile*/
+user-data*/
+.wdm/
+
+# Coverage / audit output
+.coverage
+htmlcov/
+bandit*.json
+pip-audit*.json
+
+# Python
+venv*/
+.venv/
+__pycache__/
+*.pyc
+
+# Django
+staticfiles/
+
+# Local tooling
+.claude/
+
+# Packaging (future-proof)
+dist/
+build/
+*.spec
+
+# Backup of the widget-grid UI work (reverted on request, kept for reference)
+.backup-widget-ui/

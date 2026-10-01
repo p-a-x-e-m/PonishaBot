@@ -1,0 +1,337 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-head">
+  <h1>تنظیمات</h1>
+  <p class="page-sub">پیکربندی ربات — ذخیره در config.yaml</p>
+</div>
+
+<div class="settings-layout">
+  <nav class="settings-toc" aria-label="فهرست تنظیمات">
+    <a href="#sec-controls">کنترل‌ها</a>
+    <a href="#sec-telegram">تلگرام</a>
+    <a href="#sec-search">جستجو و بودجه</a>
+    <a href="#sec-profile">پروفایل</a>
+    <a href="#sec-ai">موتور AI</a>
+    <span class="toc-label">پیشرفته</span>
+    <a href="#sec-pricing" class="toc-adv">قیمت‌گذاری</a>
+    <a href="#sec-forex" class="toc-adv">Forex / clamp</a>
+  </nav>
+
+<form id="settings-form" class="settings" autocomplete="off">
+  <section class="card panel-card" id="sec-controls">
+    <div class="card-head">
+      <div>
+        <h2>کنترل‌ها</h2>
+        <p class="card-sub">مرورگر، DRY_RUN و فایل‌های پیشنهاد</p>
+      </div>
+    </div>
+    <div class="toggle-list">
+      <label class="toggle-row">
+        <span>
+          <span class="t-main">حالت Headless</span>
+          <small class="hint help">کروم بدون پنجره — بعد از restart اعمال می‌شود · <code class="key">headless</code></small>
+        </span>
+        <input type="checkbox" name="headless" id="f-headless" {% if cfg.headless %}checked{% endif %}>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+      <label class="toggle-row">
+        <span>
+          <span class="t-main">مرورگر زنده</span>
+          <small class="hint help">پنجرهٔ جداگانهٔ داشبورد پونیشا · <code class="key">show_browser</code></small>
+        </span>
+        <input type="checkbox" name="show_browser" id="f-show_browser" {% if cfg.show_browser %}checked{% endif %}>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+      <label class="toggle-row">
+        <span>
+          <span class="t-main">DRY_RUN</span>
+          <small class="hint help">فقط اعلان — bid واقعی ارسال نمی‌شود · <code class="key">dry_run</code></small>
+        </span>
+        <input type="checkbox" name="dry_run" id="f-dry_run" {% if cfg.dry_run %}checked{% endif %}>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+    </div>
+    <div class="field-grid">
+      <label>فایل پیشنهاد
+        <small class="hint help"><code class="key">proposal_template</code></small>
+        <input type="text" name="proposal_template" id="f-proposal_template" value="{{ cfg.proposal_template }}">
+      </label>
+      <label>مسیر پروفایل کروم
+        <small class="hint help">اختیاری · <code class="key">user_data_dir</code></small>
+        <input type="text" name="user_data_dir" id="f-user_data_dir" value="{{ cfg.user_data_dir }}" placeholder="خالی = موقت">
+      </label>
+    </div>
+  </section>
+
+  <section class="card panel-card" id="sec-telegram">
+    <div class="card-head">
+      <div>
+        <h2>تلگرام</h2>
+        <p class="card-sub">هشدارهای ربات در چت شما</p>
+      </div>
+    </div>
+    <div class="field-grid">
+      <label class="field-wrap">توکن ربات
+        <small class="hint help">از BotFather · در config.yaml ذخیره می‌شود</small>
+        <span class="secret-input">
+          <input type="password" name="telegram_token" id="f-telegram_token" value="{{ cfg.telegram_token }}" autocomplete="off">
+          <button type="button" class="btn ghost btn-icon field-actions" data-reveal="f-telegram_token" title="نمایش/مخفی" aria-label="نمایش توکن">
+            <svg class="icon"><use href="#i-eye"></use></svg>
+          </button>
+        </span>
+      </label>
+      <label>شناسه چت
+        <small class="hint help"><code class="key">chat_id</code></small>
+        <input type="text" name="telegram_chat_id" id="f-telegram_chat_id" value="{{ cfg.telegram_chat_id }}">
+      </label>
+    </div>
+    <div class="row">
+      <button type="button" id="btn-test-tg" class="btn ghost">
+        <svg class="icon"><use href="#i-flask"></use></svg> تست تلگرام
+      </button>
+    </div>
+  </section>
+
+  <section class="card panel-card" id="sec-search">
+    <div class="card-head">
+      <div>
+        <h2>جستجو و بودجه</h2>
+        <p class="card-sub">چه پروژه‌هایی، با چه بودجه‌ای و هر چند ثانیه</p>
+      </div>
+    </div>
+    <div class="field-grid">
+      <label class="span-2">مهارت‌ها (جداشده با کاما)
+        <small class="hint help">یا از لیست زیر انتخاب کنید · <code class="key">search.skills</code></small>
+        <input type="text" name="skills" id="f-skills" value="{{ cfg.skills }}">
+      </label>
+      <label>حداقل بودجه (تومان)
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" name="budget_min" id="f-budget_min" value="{{ cfg.budget_min }}">
+      </label>
+      <label>حداکثر بودجه (تومان)
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" name="budget_max" id="f-budget_max" value="{{ cfg.budget_max }}">
+      </label>
+      <label>بازه بررسی (ثانیه)
+        <small class="hint help">10–3600 · <code class="key">refresh_interval</code></small>
+        <input type="number" inputmode="numeric" step="1" min="10" max="3600" name="refresh_interval" id="f-refresh_interval" value="{{ cfg.refresh_interval }}">
+      </label>
+      <label>پنجره اولویت (دقیقه)
+        <small class="hint help">پروژه‌های تازه اول · <code class="key">priority_window_minutes</code></small>
+        <input type="number" inputmode="numeric" step="1" min="0" name="priority_window_minutes" id="f-priority_window_minutes" value="{{ cfg.priority_window_minutes }}">
+      </label>
+      <label>حداقل تطابق مهارت
+        <small class="hint help">0–1 · <code class="key">min_skill_match</code></small>
+        <input type="number" inputmode="decimal" step="0.05" min="0" max="1" name="min_skill_match" id="f-min_skill_match" value="{{ cfg.min_skill_match }}">
+      </label>
+      <label>حداکثر صفحات
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" min="1" name="max_pages" id="f-max_pages" value="{{ cfg.max_pages }}">
+      </label>
+      <label>توقف در سهمیه
+        <small class="hint help">حداقل پیشنهاد باقی · <code class="key">min_remaining_proposals</code></small>
+        <input type="number" inputmode="numeric" step="1" min="0" name="min_remaining_proposals" id="f-min_remaining_proposals" value="{{ cfg.min_remaining_proposals }}">
+      </label>
+    </div>
+    <div class="skill-tools">
+      <input type="search" id="skill-search" class="search-input" placeholder="فیلتر مهارت‌ها…" aria-label="فیلتر مهارت‌ها">
+      <span id="skill-count" class="badge hidden">0</span>
+    </div>
+    <div id="skill-cats" class="skill-cats"></div>
+  </section>
+
+  <section class="card panel-card" id="sec-profile">
+    <div class="card-head">
+      <div>
+        <h2>پروفایل</h2>
+        <p class="card-sub">هویت و قوانین پیشنهاد برای AI</p>
+      </div>
+    </div>
+    <div class="field-grid">
+      <label class="span-2">نام
+        <small class="hint help">&nbsp;</small>
+        <input type="text" name="name" id="f-name" value="{{ cfg.name }}">
+      </label>
+      <label class="span-2">دستورالعمل‌های AI
+        <small class="hint help">قوانین bid و لحن پیشنهاد · <code class="key">profile.about</code></small>
+        <textarea name="about" id="f-about" rows="8">{{ cfg.about }}</textarea>
+      </label>
+      <label>نرخ ساعتی حداقل (تومان)
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1000" name="hourly_min" id="f-hourly_min" value="{{ cfg.hourly_min }}">
+      </label>
+      <label>نرخ ساعتی حداکثر (تومان)
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1000" name="hourly_max" id="f-hourly_max" value="{{ cfg.hourly_max }}">
+      </label>
+    </div>
+  </section>
+
+  <section class="card panel-card" id="sec-ai">
+    <div class="card-head">
+      <div>
+        <h2>موتور AI</h2>
+        <p class="card-sub">تصمیم bid، قیمت و متن پیشنهاد</p>
+      </div>
+    </div>
+    <div class="toggle-list">
+      <label class="toggle-row">
+        <span>
+          <span class="t-main">فعال</span>
+          <small class="hint help">در غیر این صورت heuristic داخلی · <code class="key">ai.enabled</code></small>
+        </span>
+        <input type="checkbox" name="ai_enabled" id="f-ai_enabled" {% if cfg.ai_enabled %}checked{% endif %}>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+      <label class="toggle-row">
+        <span>
+          <span class="t-main">مقایسه بازار Karlancer</span>
+          <small class="hint help">قیمت مشابه از karlancer.com · <code class="key">karlancer_enabled</code></small>
+        </span>
+        <input type="checkbox" name="karlancer_enabled" id="f-karlancer_enabled" {% if cfg.karlancer_enabled %}checked{% endif %}>
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+    </div>
+    <div class="field-grid">
+      <label>آدرس endpoint
+        <small class="hint help">OpenAI-compatible · <code class="key">ai.base_url</code></small>
+        <input type="text" name="ai_base_url" id="f-ai_base_url" value="{{ cfg.ai_base_url }}">
+      </label>
+      <label class="field-wrap">کلید API
+        <small class="hint help">در config.yaml ذخیره می‌شود</small>
+        <span class="secret-input">
+          <input type="password" name="ai_api_key" id="f-ai_api_key" value="{{ cfg.ai_api_key }}" autocomplete="off">
+          <button type="button" class="btn ghost btn-icon field-actions" data-reveal="f-ai_api_key" title="نمایش/مخفی" aria-label="نمایش کلید">
+            <svg class="icon"><use href="#i-eye"></use></svg>
+          </button>
+        </span>
+      </label>
+      <label>مدل
+        <small class="hint help">&nbsp;</small>
+        <input type="text" name="ai_model" id="f-ai_model" value="{{ cfg.ai_model }}">
+      </label>
+      <label>آستانه مهارت
+        <small class="hint help">0–1 · <code class="key">ai.min_skill_gate</code></small>
+        <input type="number" inputmode="decimal" step="0.05" min="0" max="1" name="ai_min_skill_gate" id="f-ai_min_skill_gate" value="{{ cfg.ai_min_skill_gate }}">
+      </label>
+      <label>دما (temperature)
+        <small class="hint help">0–1</small>
+        <input type="number" inputmode="decimal" step="0.05" min="0" max="1" name="ai_temperature" id="f-ai_temperature" value="{{ cfg.ai_temperature }}">
+      </label>
+      <label>حداکثر کاراکتر توضیحات
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="100" min="200" name="ai_max_description_chars" id="f-ai_max_description_chars" value="{{ cfg.ai_max_description_chars }}">
+      </label>
+      <label>صفحات Karlancer
+        <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" min="1" name="karlancer_max_pages" id="f-karlancer_max_pages" value="{{ cfg.karlancer_max_pages }}">
+      </label>
+    </div>
+    <div class="row">
+      <button type="button" id="btn-test-ai" class="btn ghost">
+        <svg class="icon"><use href="#i-flask"></use></svg> تست AI
+      </button>
+      <span id="ai-test-result" class="hint"></span>
+    </div>
+  </section>
+
+  <details class="adv-collapse" id="adv-more">
+    <summary>
+      <span>تنظیمات پیشرفته — قیمت‌گذاری و Forex</span>
+      <span class="adv-hint">کمتر استفاده‌شده</span>
+    </summary>
+    <div class="adv-body">
+      <section class="card panel-card" id="sec-pricing">
+        <div class="card-head">
+          <div>
+            <h2>قیمت‌گذاری رقابتی</h2>
+            <p class="card-sub">تخفیف/حباب‌ها بر اساس تعداد رقبا</p>
+          </div>
+        </div>
+        <div class="field-grid">
+          <label>آستانه رقابت بالا
+            <small class="hint help">تعداد پیشنهاد · <code class="key">high_competition_threshold</code></small>
+            <input type="number" inputmode="numeric" step="1" min="0" name="high_competition_threshold" id="f-high_competition_threshold" value="{{ cfg.high_competition_threshold }}">
+          </label>
+          <label>حباب فوری (%)
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" min="0" max="100" name="urgency_premium_percent" id="f-urgency_premium_percent" value="{{ cfg.urgency_premium_percent }}">
+          </label>
+          <label>ضریب بج متمایز
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="decimal" step="0.05" name="premium_badge_multiplier" id="f-premium_badge_multiplier" value="{{ cfg.premium_badge_multiplier }}">
+          </label>
+          <label>رقابت کم (%)
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" min="0" max="100" name="low_competition_discount_percent" id="f-low_competition_discount_percent" value="{{ cfg.low_competition_discount_percent }}">
+          </label>
+          <label>رقابت زیاد (%)
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="numeric" step="1" min="0" max="100" name="high_competition_discount_percent" id="f-high_competition_discount_percent" value="{{ cfg.high_competition_discount_percent }}">
+          </label>
+        </div>
+      </section>
+
+      <section class="card panel-card" id="sec-forex">
+        <div class="card-head">
+          <div>
+            <h2>Forex و کلَمپ Karlancer</h2>
+            <p class="card-sub">تعدیل قیمت با نرخ دلار و میانگین بازار</p>
+          </div>
+        </div>
+        <div class="toggle-list">
+          <label class="toggle-row">
+            <span>
+              <span class="t-main">Forex</span>
+              <small class="hint help">ارتقای قیمت با تغییر دلار · <code class="key">forex.enabled</code></small>
+            </span>
+            <input type="checkbox" name="forex_enabled" id="f-forex_enabled" {% if cfg.forex_enabled %}checked{% endif %}>
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="toggle-row">
+            <span>
+              <span class="t-main">Soft clamp</span>
+              <small class="hint help">سقف قیمت نسبت به میانگین Karlancer · <code class="key">soft_clamp_enabled</code></small>
+            </span>
+            <input type="checkbox" name="kl_clamp_enabled" id="f-kl_clamp_enabled" {% if cfg.kl_clamp_enabled %}checked{% endif %}>
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="field-grid">
+          <label>نرخ مبنا دلار (تومان)
+            <small class="hint help"><code class="key">baseline_usd_rate</code></small>
+            <input type="number" inputmode="numeric" step="1000" name="baseline_usd_rate" id="f-baseline_usd_rate" value="{{ cfg.baseline_usd_rate }}">
+          </label>
+          <label>حساسیت
+            <small class="hint help">0–1 · <code class="key">sensitivity</code></small>
+            <input type="number" inputmode="decimal" step="0.05" min="0" max="1" name="forex_sensitivity" id="f-forex_sensitivity" value="{{ cfg.forex_sensitivity }}">
+          </label>
+          <label>منبع نرخ
+            <small class="hint help">&nbsp;</small>
+        <input type="text" name="forex_source" id="f-forex_source" value="{{ cfg.forex_source }}">
+          </label>
+          <label>ضریب کلَمپ
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="decimal" step="0.1" name="kl_clamp_mult" id="f-kl_clamp_mult" value="{{ cfg.kl_clamp_mult }}">
+          </label>
+          <label>ضریب هدف
+            <small class="hint help">&nbsp;</small>
+        <input type="number" inputmode="decimal" step="0.1" name="kl_target_mult" id="f-kl_target_mult" value="{{ cfg.kl_target_mult }}">
+          </label>
+        </div>
+      </section>
+    </div>
+  </details>
+
+  <div class="save-bar">
+    <button type="submit" id="btn-save" class="btn primary">ذخیره تنظیمات</button>
+    <span id="dirty-flag">تغییرات ذخیره‌نشده</span>
+    <span id="save-msg" class="hint" role="status"></span>
+  </div>
+</form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'dashboard/js/settings.js' %}"></script>
+{% endblock %}

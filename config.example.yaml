@@ -1,0 +1,56 @@
+# Copy this file to config.yaml and fill in your own secrets.
+# config.yaml is gitignored — never commit real tokens/keys.
+telegram:
+  bot_token: "REPLACE_WITH_BOTTOKEN_FROM_BOTFATHER"
+  chat_id: "REPLACE_WITH_YOUR_CHAT_ID"
+search:
+  skills:
+  - Python
+  - Django
+  - پایتون (Python)
+  - جنگو (Django)
+monitor:
+  refresh_interval: 60
+  max_pages: 3
+  priority_window_minutes: 5
+bid:
+  budget_min: 0
+  budget_max: 25000000
+  proposal_template: descriptions.txt
+  min_skill_match: 0.5
+  dry_run: true
+  min_remaining_proposals: 2
+  competitive_pricing:
+    high_competition_threshold: 15
+    urgency_premium_percent: 20
+    premium_badge_multiplier: 1.15
+    low_competition_discount_percent: 10
+    high_competition_discount_percent: 15
+browser:
+  headless: false
+  show_browser: true
+  user_data_dir: null
+ai:
+  enabled: false
+  base_url: "https://your-router.example/v1"
+  api_key: "REPLACE_WITH_YOUR_AI_API_KEY"
+  model: "your-model-name"
+  min_skill_gate: 0.2
+  max_description_chars: 4000
+  temperature: 0.2
+  karlancer_enabled: true
+  karlancer_max_pages: 2
+forex:
+  enabled: true
+  baseline_usd_rate: 229000
+  sensitivity: 0.5
+  source: wallex
+karlancer:
+  soft_clamp_enabled: true
+  clamp_multiplier: 3.0
+  target_multiplier: 2.5
+profile:
+  name: ""
+  about: "Describe your experience, rates, and bid rules for the AI."
+  hourly_min: 0
+  hourly_max: 0

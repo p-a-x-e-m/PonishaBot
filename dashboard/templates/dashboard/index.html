@@ -1,0 +1,159 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-head">
+  <h1>داشبورد</h1>
+  <p class="page-sub">مانیتور پروژه‌های ponisha.ir</p>
+</div>
+
+<section class="stat-grid" id="strip" aria-label="وضعیت">
+  <div class="stat stat-hero">
+    <div class="pulse" id="pulse"></div>
+    <div>
+      <div class="state-word" id="state-word">Idle</div>
+      <div class="state-sub" id="state-sub">برای شروع مانیتور Start را بزنید</div>
+    </div>
+  </div>
+  <div class="stat" title="سهمیه پیشنهاد باقی‌مانده در ponisha"><label>پیشنهاد باقی</label><strong id="g-quota">—</strong></div>
+  <div class="stat" title="پروژه‌های match شده در این جلسه"><label>متچ‌ها</label><strong id="g-matches">0</strong></div>
+  <div class="stat" title="تعداد bid ثبت‌شده"><label>بیدها</label><strong id="g-bids">0</strong></div>
+  <div class="stat" title="مدت اجرا از آخرین Start"><label>Uptime</label><strong id="g-uptime">0h 0m 0s</strong></div>
+  <div class="stat" title="نرخ لحظه‌ای دلار به تومان"><label>USD/Toman</label><strong id="g-usd">—</strong></div>
+</section>
+
+<div class="toolbar">
+  <button type="button" id="btn-start" class="btn primary">
+    <svg class="icon"><use href="#i-play"></use></svg> Start
+    <kbd class="kbd">s</kbd>
+  </button>
+  <button type="button" id="btn-stop" class="btn danger" disabled>
+    <svg class="icon"><use href="#i-stop"></use></svg> Stop
+    <kbd class="kbd">S</kbd>
+  </button>
+  <button type="button" id="btn-login" class="btn">
+    <svg class="icon"><use href="#i-key"></use></svg> Login
+    <kbd class="kbd">l</kbd>
+  </button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" id="btn-demo" class="btn ghost" title="اجرای mock روی موتور تصمیم">
+    <svg class="icon"><use href="#i-flask"></use></svg> Demo
+  </button>
+  <label class="toggle-inline" title="فقط اعلان، bid واقعی نزن">
+    <input type="checkbox" id="chk-dry">
+    <span class="switch" aria-hidden="true"></span>
+    <span>DRY_RUN</span>
+  </label>
+</div>
+
+<div class="layout">
+  <section class="card panel-card" id="projects-card">
+    <div class="card-head">
+      <div class="card-head-actions">
+        <h2>پروژه‌ها</h2>
+        <span id="project-count" class="count-chip">0</span>
+      </div>
+      <input type="search" id="project-search" class="search-input" placeholder="جستجوی پروژه…" aria-label="جستجوی پروژه">
+    </div>
+    <div id="projects" class="projects">
+      <div class="empty-state" id="projects-empty">
+        <div class="empty-icon"><svg class="icon"><use href="#i-inbox"></use></svg></div>
+        <div class="empty-title">منتظر اسکن</div>
+        <div class="empty-sub">قبل از Start تنظیمات فعلی را چک کنید</div>
+
+        {% if summary %}
+        <dl class="cfg-summary" id="cfg-summary">
+          <div class="cfg-row">
+            <dt>DRY_RUN</dt>
+            <dd>
+              {% if summary.dry_run %}
+                <span class="chip on">ON — فقط اعلان</span>
+              {% else %}
+                <span class="chip off">OFF — bid واقعی</span>
+              {% endif %}
+            </dd>
+          </div>
+          <div class="cfg-row">
+            <dt>مهارت‌ها</dt>
+            <dd>
+              <span class="num">{{ summary.skill_count }}</span>
+              {% if summary.skills_preview %}
+                <span class="cfg-skills">
+                  {% for s in summary.skills_preview %}<span class="skill-tag">{{ s }}</span>{% endfor %}
+                  {% if summary.skills_more %}<span class="skill-tag">+{{ summary.skills_more }}</span>{% endif %}
+                </span>
+              {% else %}
+                <span class="muted">خالی</span>
+              {% endif %}
+            </dd>
+          </div>
+          <div class="cfg-row">
+            <dt>بودجه</dt>
+            <dd>
+              <span class="num">{{ summary.budget_min|floatformat:0 }}</span>
+              –
+              <span class="num">{{ summary.budget_max|floatformat:0 }}</span>
+              <span class="muted">تومان</span>
+            </dd>
+          </div>
+          <div class="cfg-row">
+            <dt>Poll</dt>
+            <dd><span class="num">{{ summary.refresh_interval }}</span><span class="muted">s</span></dd>
+          </div>
+          <div class="cfg-row">
+            <dt>AI</dt>
+            <dd>{% if summary.ai_enabled %}<span class="chip on">ON</span>{% else %}<span class="chip">heuristic</span>{% endif %}</dd>
+          </div>
+          <div class="cfg-row">
+            <dt>Session</dt>
+            <dd>{% if summary.has_cookies %}<span class="chip on">cookies</span>{% else %}<span class="chip off">نیاز به Login</span>{% endif %}</dd>
+          </div>
+        </dl>
+        {% endif %}
+
+        <a class="empty-link" href="{% url 'dashboard:settings' %}">ویرایش در تنظیمات →</a>
+        <button type="button" class="btn primary" id="btn-empty-start">شروع مانیتور</button>
+      </div>
+    </div>
+    <div id="detail" class="detail hidden">
+      <h3 id="d-title"></h3>
+      <div class="meta"><span id="d-budget"></span> · <span id="d-bids"></span></div>
+      <div id="d-badges" class="proj-badges"></div>
+      <div id="d-extra" class="detail-extra hidden">
+        <span id="d-employer"></span>
+        <span id="d-deadline"></span>
+        <span id="d-price"></span>
+      </div>
+      <div id="d-skills" class="skills"></div>
+      <p id="d-desc"></p>
+      <div class="row">
+        <a id="d-url" href="#" target="_blank" rel="noopener">
+          <svg class="icon"><use href="#i-open"></use></svg> باز کردن در مرورگر
+        </a>
+        <button type="button" class="btn ghost btn-icon" id="btn-copy-url" title="کپی لینک" aria-label="کپی لینک">
+          <svg class="icon"><use href="#i-copy"></use></svg>
+        </button>
+      </div>
+      <div class="row">
+        <button type="button" id="btn-bid" class="btn saffron" disabled>Bid</button>
+        <span id="bid-hint" class="hint"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card panel-card" id="log-card">
+    <div class="card-head">
+      <div class="card-head-actions">
+        <h2>لاگ زنده</h2>
+        <span id="log-count" class="count-chip">0</span>
+      </div>
+      <div class="card-head-actions log-filters" id="log-filter">
+        <button type="button" class="log-filter on" data-level="all">همه</button>
+        <button type="button" class="log-filter" data-level="error">ERROR</button>
+        <button type="button" class="log-filter" data-level="warn">WARN</button>
+        <button type="button" id="btn-clear-log" class="btn ghost btn-icon" title="پاک کردن لاگ" aria-label="پاک کردن لاگ">×</button>
+      </div>
+    </div>
+    <pre id="log" class="log log-idle" dir="ltr" aria-live="polite"><span class="log-line dim">— no events yet —</span></pre>
+  </section>
+</div>
+{% endblock %}

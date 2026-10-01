@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#060809">
+  <meta name="description" content="ponishabot — local dashboard for ponisha.ir automation">
+  <title>ponishabot — ponisha.ir automation</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23f5a524'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='system-ui' font-weight='700' font-size='16' fill='%23060809'%3Ep%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{% static 'dashboard/css/app.css' %}">
+</head>
+<body class="booting">
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h8v8H3v-8zm10 3h8v5h-8v-5zm0-6h8v2h-8v-2z"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5zm2 2v2h2V7H6zm4 0v2h8V7h-8zm0 4v2h8v-2h-8zm-4 4v2h12v-2H6z"/></symbol>
+    <symbol id="i-tune" viewBox="0 0 24 24"><path d="M3 7h12v2H3V7zm0 8h8v2H3v-2zM17 7h4v2h-4V7zm-4 8h8v2h-8v-2zM17 3h4v2h-4V3zm0 16h4v2h-4v-2z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><path d="M14 7a4 4 0 10-3.16 3.9L7.7 14.4l1.9 1.9-1.4 1.4-1.9-1.9-1.4 1.4 1.9 1.9 1.4-1.4 1.9 1.9 1.4-1.4-1.9-1.9 2.5-2.5A4 4 0 0014 7zm0 2a2 2 0 110-4 2 2 0 010 4z"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6v2h-1v5.2l4.3 7.5A2 2 0 0116.6 21H7.4a2 2 0 01-1.7-3.3L10 10.2V5H9V3zm2 2v4.5l-3.4 5.9h8.8L13 9.5V5h-2z"/></symbol>
+    <symbol id="i-open" viewBox="0 0 24 24"><path d="M14 3h7v7h-2V6.4l-9.3 9.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="M10 4a6 6 0 104.9 9.5l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5zm2 2v6h12V7H6zm0 8v2h12v-2H6z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><path d="M8 4h10v2H8V4zm-2 4h12v12H6V8zm2 2v8h8v-8H8z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M12 6c4 0 7.5 2.5 9 6-1.5 3.5-5 6-9 6s-7.5-2.5-9-6c1.5-3.5 5-6 9-6zm0 2a4 4 0 100 8 4 4 0 000-8zm0 2a2 2 0 110 4 2 2 0 010-4z"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="traffic-lights" aria-hidden="true">
+        <span class="tl red"></span>
+        <span class="tl yellow"></span>
+        <span class="tl green"></span>
+      </div>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div class="brand-text">
+          <div class="brand-name">ponishabot</div>
+          <div class="brand-sub">ponisha.ir bot</div>
+        </div>
+      </div>
+      <nav class="sidenav">
+        <div class="nav-group-label">Operations</div>
+        <a href="{% url 'dashboard:index' %}" class="nav-item {% if active == 'home' %}active{% endif %}" title="داشبورد" aria-label="داشبورد">
+          <svg class="icon"><use href="#i-dashboard"></use></svg>
+          <span>داشبورد</span>
+          <span id="nav-badge" class="badge hidden">0</span>
+        </a>
+        <a href="{% url 'dashboard:index' %}#log" class="nav-item" title="لاگ زنده" aria-label="لاگ زنده">
+          <svg class="icon"><use href="#i-terminal"></use></svg>
+          <span>لاگ زنده</span>
+        </a>
+        <div class="nav-group-label">Config</div>
+        <a href="{% url 'dashboard:settings' %}" class="nav-item {% if active == 'settings' %}active{% endif %}" title="تنظیمات" aria-label="تنظیمات">
+          <svg class="icon"><use href="#i-tune"></use></svg>
+          <span>تنظیمات</span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <div id="status-pill" class="pill" aria-live="polite">…</div>
+      </div>
+    </aside>
+
+    <div class="app-body">
+      <div id="banner" class="banner hidden">
+        <div class="otp-login">
+          <div class="otp-row">
+            <label for="otp-mobile">ورود به پونیشا</label>
+            <input type="tel" id="otp-mobile" class="search-input"
+                   placeholder="09121234567" dir="ltr" autocomplete="tel">
+            <button type="button" id="btn-request-otp" class="btn primary">ارسال کد</button>
+          </div>
+          <div class="otp-row hidden" id="otp-code-row">
+            <label for="otp-code">کد پیامک‌شده</label>
+            <input type="text" id="otp-code" class="search-input" placeholder="-----"
+                   dir="ltr" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+            <button type="button" id="btn-verify-otp" class="btn primary">تایید</button>
+            <span id="otp-countdown" class="hint"></span>
+          </div>
+          <div class="otp-row">
+            <span id="otp-msg" class="hint"></span>
+          </div>
+        </div>
+        <button type="button" id="btn-login-done" class="btn ghost">بستن</button>
+      </div>
+
+      <div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+      <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal">
+          <h3 id="modal-title">تأیید</h3>
+          <p id="modal-body"></p>
+          <div class="modal-actions">
+            <button type="button" id="modal-cancel" class="btn">انصراف</button>
+            <button type="button" id="modal-ok" class="btn primary">تأیید</button>
+          </div>
+        </div>
+      </div>
+
+      <main id="main">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="statusbar">
+        <span id="statusbar" aria-live="polite">آماده — Start یا Login را بزنید</span>
+        <span class="conn" id="conn" title="اتصال به سرور">
+          <span class="conn-dot" aria-hidden="true"></span>
+          <span id="conn-text">…</span>
+        </span>
+        <span id="usd-rate"></span>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    window.__CSRF__ = "{{ csrf_token }}";
+  </script>
+  <script src="{% static 'dashboard/js/poll.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
